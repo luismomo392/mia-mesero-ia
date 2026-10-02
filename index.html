@@ -8,7 +8,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.1</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
 <section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
@@ -59,12 +59,17 @@ function recommendation(q){
   if(/pescado|filete/.test(s)) memory.wantsFish=true;
   const budget=memory.budget, people=memory.people, noSpicy=memory.noSpicy, wantsShrimp=memory.wantsShrimp, wantsFish=memory.wantsFish;
   lastPicks=[];
+  const totalNow=cart.reduce((a,d)=>a+d[2],0);
+  if(/propina/.test(s)){
+    if(!totalNow)return 'Todavía no hay productos en el pedido para calcular propina.';
+    let tip=s.match(/(\d{1,2})\s*%?[^\d]{0,12}propina|propina[^\d]{0,12}(\d{1,2})\s*%?/);
+    if(tip){let pct=Number(tip[1]||tip[2]),amount=Math.round(totalNow*pct/100);return `${pct}% de propina son ${money(amount)}. Total con propina: ${money(totalNow+amount)}.`;}
+    return 'Claro. ¿Qué porcentaje de propina quieres calcular? Por ejemplo: 10%, 15% o 20%.';
+  }
+  let split=s.match(/(?:entre|divid|repart).{0,12}?(\d{1,2})/);if(split&&totalNow){let n=Number(split[1]);return `La cuenta es ${money(totalNow)}. Entre ${n}, toca aproximadamente ${money(Math.round(totalNow/n))} por persona.`;}
   const itemMatch=dishes.find(d=>s.includes(normalize(d[0])));
   if(itemMatch && /quita|quitar|elimina|eliminar|saca|sacar/.test(s)){const idx=cart.findIndex(d=>d[0]===itemMatch[0]);if(idx>=0){cart.splice(idx,1);renderCart();return `Listo, quité ${itemMatch[0]} del pedido. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}return `No encontré ${itemMatch[0]} en el pedido.`;}
-  if(itemMatch && /agrega|agregar|pon|ponme|anade|añade/.test(s)){let qty=1,m=s.match(/(?:ponme|pon|agrega|anade|añade)\s+(\d+)/);if(m)qty=Math.min(Number(m[1]),10);for(let i=0;i<qty;i++)cart.push(itemMatch);renderCart();return `Listo, agregué ${qty>1?qty+' × ':''}${itemMatch[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}
-  const totalNow=cart.reduce((a,d)=>a+d[2],0);
-  let split=s.match(/(?:entre|divid|repart).{0,12}?(\d{1,2})/);if(split&&totalNow){let n=Number(split[1]);return `La cuenta es ${money(totalNow)}. Entre ${n}, toca aproximadamente ${money(Math.round(totalNow/n))} por persona.`;}
-  let tip=s.match(/(?:propina).{0,8}?(\d{1,2})\s*%?/);if(tip&&totalNow){let pct=Number(tip[1]),amount=Math.round(totalNow*pct/100);return `${pct}% de propina son ${money(amount)}. Total con propina: ${money(totalNow+amount)}.`;}
+  if(itemMatch && /agrega|agregar|agregale|pon|ponme|anade|añade/.test(s)){let qty=1,m=s.match(/(?:ponme|pon|agrega|agregale|anade|añade)\s+(\d+)/);if(m)qty=Math.min(Number(m[1]),10);for(let i=0;i<qty;i++)cart.push(itemMatch);renderCart();return `Listo, agregué ${qty>1?qty+' × ':''}${itemMatch[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}
   let pool=dishes.map((d,i)=>({d,i})).filter(x=>{
     if(noSpicy && x.d[0].toLowerCase().includes('aguachile')) return false;
     const txt=normalize(x.d[0]+' '+x.d[1]);
