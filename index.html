@@ -42,7 +42,13 @@ function renderMenu(){document.getElementById('menu').innerHTML=dishes.map((d,i)
 function add(i){cart.push(dishes[i]);renderCart()}
 function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='Aún no has agregado nada.';document.getElementById('total').innerText='$0 MXN';return}el.innerHTML=cart.map((d,i)=>`<div class="cartrow"><span>${d[0]}</span><span>${money(d[2])} <button onclick="cart.splice(${i},1);renderCart()">×</button></span></div>`).join('');document.getElementById('total').innerText=money(cart.reduce((a,d)=>a+d[2],0))}
 function normalize(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
-function getBudget(s){let m=s.match(/\$?\s*([0-9]{3,5})/);return m?Number(m[1]):null}
+function getBudget(s){
+  const moneyMatch=s.match(/\$\s*([0-9]{1,3}(?:[,.][0-9]{3})+|[0-9]{3,6})/);
+  const contextMatch=s.match(/(?:presupuesto|traemos|tenemos|gastar|gastamos|cuento con|contamos con)(?:\s+de|\s+con)?\s*\$?\s*([0-9]{1,3}(?:[,.][0-9]{3})+|[0-9]{3,6})/);
+  const m=moneyMatch||contextMatch;
+  if(!m)return null;
+  return Number(m[1].replace(/[,.](?=\d{3}(?:\D|$))/g,''));
+}
 function getPeople(s){let m=s.match(/(?:somos|para|venimos|seremos)\s+(\d{1,2})/);return m?Number(m[1]):null}
 function recommendation(q){
   const s=normalize(q), budget=getBudget(s), people=getPeople(s);
