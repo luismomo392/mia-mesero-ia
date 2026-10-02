@@ -4,13 +4,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Mía · Mesero IA</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7f8;color:#13252b}.hero{background:linear-gradient(135deg,#073b4c,#087f8c);color:white;padding:22px 18px 30px;border-radius:0 0 28px 28px}.hero small{opacity:.85}.hero h1{margin:6px 0 2px;font-size:30px}.wrap{max-width:680px;margin:auto}.card{background:white;margin:14px;padding:16px;border-radius:18px;box-shadow:0 5px 18px #00000010}.mia{display:flex;gap:12px;align-items:center}.avatar{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#e4f5f3;font-size:28px}.chips{display:flex;gap:8px;overflow:auto;padding:4px 0 8px}.chip,.btn{border:0;border-radius:999px;padding:10px 13px;background:#e9f4f4;color:#075b65;font-weight:700;white-space:nowrap}.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dish{border:1px solid #e5ebed;border-radius:15px;padding:12px}.dish b{display:block}.dish p{font-size:12px;min-height:34px;color:#5c6b70}.price{font-weight:800}.add{width:100%;margin-top:8px;border:0;border-radius:10px;padding:8px;background:#087f8c;color:white;font-weight:800}.chat{background:#eef7f7;border-radius:14px;padding:12px;min-height:90px;white-space:pre-line}.input{display:flex;gap:8px;margin-top:10px}.input input{flex:1;border:1px solid #ccd8db;border-radius:12px;padding:12px;font-size:16px}.send{border:0;border-radius:12px;background:#073b4c;color:white;padding:0 15px;font-weight:800}.cartrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.total{font-size:21px;font-weight:900;text-align:right;margin-top:10px}.order{width:100%;border:0;border-radius:14px;padding:14px;background:#ef8354;color:white;font-weight:900;font-size:16px}.notice{font-size:12px;color:#69777b}.success{background:#e8f7ed;color:#176b35;padding:12px;border-radius:12px;margin-top:10px;display:none}@media(max-width:420px){.menu{grid-template-columns:1fr}.card{margin:11px}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7f8;color:#13252b}.hero{background:linear-gradient(135deg,#073b4c,#087f8c);color:white;padding:22px 18px 30px;border-radius:0 0 28px 28px}.hero small{opacity:.85}.hero h1{margin:6px 0 2px;font-size:30px}.wrap{max-width:680px;margin:auto}.card{background:white;margin:14px;padding:16px;border-radius:18px;box-shadow:0 5px 18px #00000010}.mia{display:flex;gap:12px;align-items:center}.avatar{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#e4f5f3;font-size:28px}.chips{display:flex;gap:8px;overflow:auto;padding:4px 0 8px}.chip,.btn{border:0;border-radius:999px;padding:10px 13px;background:#e9f4f4;color:#075b65;font-weight:700;white-space:nowrap}.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dish{border:1px solid #e5ebed;border-radius:15px;padding:12px}.dish b{display:block}.dish p{font-size:12px;min-height:34px;color:#5c6b70}.price{font-weight:800}.add{width:100%;margin-top:8px;border:0;border-radius:10px;padding:8px;background:#087f8c;color:white;font-weight:800}.chat{background:#eef7f7;border-radius:14px;padding:12px;min-height:90px;white-space:pre-line}.recbtn{display:none;width:100%;margin-top:10px;border:0;border-radius:12px;padding:11px;background:#087f8c;color:white;font-weight:900}.input{display:flex;gap:8px;margin-top:10px}.input input{flex:1;border:1px solid #ccd8db;border-radius:12px;padding:12px;font-size:16px}.send{border:0;border-radius:12px;background:#073b4c;color:white;padding:0 15px;font-weight:800}.cartrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.total{font-size:21px;font-weight:900;text-align:right;margin-top:10px}.order{width:100%;border:0;border-radius:14px;padding:14px;background:#ef8354;color:white;font-weight:900;font-size:16px}.notice{font-size:12px;color:#69777b}.success{background:#e8f7ed;color:#176b35;padding:12px;border-radius:12px;margin-top:10px;display:none}@media(max-width:420px){.menu{grid-template-columns:1fr}.card{margin:11px}}
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.2</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.3</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
-<section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
+<section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
 <section class="card"><h2>Tu pedido · Mesa 4</h2><div id="cart">Aún no has agregado nada.</div><div id="total" class="total">$0 MXN</div><button class="order" onclick="order()">Enviar pedido a cocina 🍽️</button><div id="ok" class="success">✅ ¡Pedido enviado! Cocina recibió la orden de la Mesa 4.</div></section>
 <section class="card notice">⚠️ Demo de prototipo. Si tienes una alergia grave, confírmala siempre directamente con el personal del restaurante.</section>
@@ -36,7 +36,7 @@ const dishes=[
 ['Cerveza sin alcohol','355 ml',55,'🍺'],
 ['Pastel de limón','Rebanada',75,'🍰']
 ];
-let cart=[];
+let cart=[]; let memory={people:null,budget:null,noSpicy:false,wantsShrimp:false,wantsFish:false}; let lastPicks=[];
 function money(n){return '$'+n.toLocaleString('es-MX')+' MXN'}
 function renderMenu(){document.getElementById('menu').innerHTML=dishes.map((d,i)=>`<div class="dish"><div style="font-size:25px">${d[3]}</div><b>${d[0]}</b><p>${d[1]}</p><span class="price">${money(d[2])}</span><button class="add" onclick="add(${i})">+ Agregar</button></div>`).join('')}
 function add(i){cart.push(dishes[i]);renderCart()}
@@ -51,41 +51,46 @@ function getBudget(s){
 }
 function getPeople(s){let m=s.match(/(?:somos|para|venimos|seremos)\s+(\d{1,2})/);return m?Number(m[1]):null}
 function recommendation(q){
-  const s=normalize(q), budget=getBudget(s), people=getPeople(s);
-  const noSpicy=/sin picante|no.*picante|nada.*picante/.test(s);
-  const wantsShrimp=/camaron|camarones/.test(s), wantsFish=/pescado|filete/.test(s);
+  const s=normalize(q), newBudget=getBudget(s), newPeople=getPeople(s);
+  if(newBudget) memory.budget=newBudget;
+  if(newPeople) memory.people=newPeople;
+  if(/sin picante|no.*picante|nada.*picante/.test(s)) memory.noSpicy=true;
+  if(/camaron|camarones/.test(s)) memory.wantsShrimp=true;
+  if(/pescado|filete/.test(s)) memory.wantsFish=true;
+  const budget=memory.budget, people=memory.people, noSpicy=memory.noSpicy, wantsShrimp=memory.wantsShrimp, wantsFish=memory.wantsFish;
+  lastPicks=[];
   let pool=dishes.map((d,i)=>({d,i})).filter(x=>{
     if(noSpicy && x.d[0].toLowerCase().includes('aguachile')) return false;
-    if(wantsShrimp && !normalize(x.d[0]+' '+x.d[1]).includes('camaron')) return false;
-    if(wantsFish && !normalize(x.d[0]+' '+x.d[1]).includes('pescado') && !normalize(x.d[0]).includes('filete')) return false;
+    const txt=normalize(x.d[0]+' '+x.d[1]);
+    if(wantsShrimp && wantsFish) return txt.includes('camaron')||txt.includes('pescado')||normalize(x.d[0]).includes('filete');
+    if(wantsShrimp && !txt.includes('camaron')) return false;
+    if(wantsFish && !txt.includes('pescado')&&!normalize(x.d[0]).includes('filete')) return false;
     return true;
   });
   if(!pool.length) pool=dishes.map((d,i)=>({d,i})).filter(x=>!noSpicy||!x.d[0].toLowerCase().includes('aguachile'));
   const totalCart=cart.reduce((a,d)=>a+d[2],0);
-  if(/cuanto|cuenta|llevamos|total/.test(s)) return cart.length?`Llevan ${cart.length} producto(s) por ${money(totalCart)}. ${budget&&totalCart>budget?'Ya rebasaron el presupuesto que me indicaste.':'Todavía puedo ayudarles a completar el pedido.'}`:'Todavía no han agregado productos. Dime cuántos son y su presupuesto y les propongo algo.';
-  if(/hola|buenas|buen dia|buenas tardes|buenas noches/.test(s) && s.length<35) return '¡Hola! 👋 Soy Mía. Dime cuántos son, cuánto quieren gastar y qué se les antoja; yo les ayudo a armar el pedido.';
+  if(/cuanto|cuenta|llevamos|total/.test(s)) return cart.length?`Llevan ${cart.length} producto(s) por ${money(totalCart)}. ${budget&&totalCart>budget?'Ya rebasaron el presupuesto que me indicaste.':'Todavía puedo ayudarles a completar el pedido.'}`:'Todavía no han agregado productos. Ya recuerdo sus preferencias; cuando quieran les armo una propuesta.';
+  if(/hola|buenas|buen dia|buenas tardes|buenas noches/.test(s)&&s.length<35) return '¡Hola! 👋 Soy Mía. Dime cuántos son, cuánto quieren gastar y qué se les antoja.';
   if(/postre|dulce/.test(s)) return 'Para cerrar, tenemos pastel de limón por $75. 🍰';
   if(/bebida|tomar|refresco|limonada|agua/.test(s)) return 'De bebidas tenemos limonada $45, agua fresca $38, refresco $40 y cerveza sin alcohol $55. 🥤';
-  if(/alerg/.test(s)) return 'Si se trata de una alergia, puedo orientarte con los ingredientes del menú, pero por seguridad debes confirmarla directamente con el personal antes de ordenar. ⚠️';
+  if(/alerg/.test(s)) return 'Si se trata de una alergia, puedo orientarte con los ingredientes, pero por seguridad debes confirmarla directamente con el personal antes de ordenar. ⚠️';
   if(budget){
-    let available=Math.max(0,budget-totalCart), picks=[], sum=0;
+    let available=Math.max(0,budget-totalCart), sum=0;
     let candidates=pool.filter(x=>x.d[2]<=available).sort((a,b)=>b.d[2]-a.d[2]);
     const target=people?Math.min(Math.max(people+1,2),6):4;
-    for(const x of candidates){if(picks.length>=target)break;if(sum+x.d[2]<=available){picks.push(x.d);sum+=x.d[2]}}
-    if(!picks.length) return `Con un presupuesto de ${money(budget)}, ya llevan ${money(totalCart)} en el carrito. No me queda margen suficiente para agregar otro platillo sin rebasarlo.`;
-    return `${people?'Para '+people+' persona'+(people>1?'s':'')+', ':''}con presupuesto de ${money(budget)}${noSpicy?' y evitando picante':''}, les propongo: ${picks.map(d=>d[0]+' ('+money(d[2])+')').join(', ')}. Esta sugerencia suma ${money(sum)}${totalCart?', además de los '+money(totalCart)+' que ya llevan':''}. 🙌`;
+    for(const x of candidates){if(lastPicks.length>=target)break;if(sum+x.d[2]<=available){lastPicks.push(x.d);sum+=x.d[2]}}
+    if(!lastPicks.length) return `Recuerdo que su presupuesto es ${money(budget)} y ya llevan ${money(totalCart)}. No queda margen suficiente para agregar otro platillo sin rebasarlo.`;
+    return `${people?'Para '+people+' persona'+(people>1?'s':'')+', ':''}recuerdo un presupuesto de ${money(budget)}${noSpicy?' y que debemos evitar picante':''}. Les propongo: ${lastPicks.map(d=>d[0]+' ('+money(d[2])+')').join(', ')}. La sugerencia suma ${money(sum)}${totalCart?', además de los '+money(totalCart)+' que ya llevan':''}. 🙌`;
   }
-  if(wantsShrimp||wantsFish||noSpicy){
-    const picks=pool.slice(0,4).map(x=>x.d);
-    return `Claro 😊 ${noSpicy?'Voy a evitar los aguachiles. ':''}Te sugiero: ${picks.map(d=>d[0]+' ('+money(d[2])+')').join(', ')}. Si me dices cuántos son y cuánto quieren gastar, te armo una combinación más precisa.`;
-  }
-  if(people) return `Perfecto, son ${people}. Dime aproximadamente cuánto quieren gastar y si prefieren camarón, pescado, algo sin picante o un poco de todo, y les armo una combinación.`;
-  return 'Entendí tu mensaje 😊. Para recomendarte mejor dime, por ejemplo: “somos 4, tenemos $1,200, queremos camarón y uno no come picante”. También puedo decirte cuánto llevan en la cuenta.';
+  if(people) return `Perfecto, recuerdo que son ${people}${noSpicy?' y que debemos evitar picante':''}. Ahora dime cuánto quieren gastar y les armo el pedido.`;
+  return 'Voy guardando lo que me dices 😊. Para armar una propuesta completa dime cuántos son y aproximadamente cuánto quieren gastar.';
 }
-function ask(p){let q=p||document.getElementById('q').value.trim();if(!q)return;let ans=recommendation(q);document.getElementById('chat').innerText='Tú: '+q+'\n\nMía: '+ans;document.getElementById('q').value=''}
+function ask(p){let q=p||document.getElementById('q').value.trim();if(!q)return;let ans=recommendation(q);document.getElementById('chat').innerText='Tú: '+q+'\n\nMía: '+ans;document.getElementById('q').value='';document.getElementById('recBtn').style.display=lastPicks.length?'block':'none'}
+function addRecommendation(){if(!lastPicks.length)return;lastPicks.forEach(d=>cart.push(d));renderCart();document.getElementById('recBtn').style.display='none';document.getElementById('chat').innerText+='\n\n✅ Mía: Listo, agregué mi recomendación al pedido.'}
 function order(){if(!cart.length){document.getElementById('chat').innerText='Mía: Primero agrega al menos un producto al pedido 😊';return}document.getElementById('ok').style.display='block'}
 renderMenu();renderCart();
 document.querySelectorAll('[data-ask]').forEach(function(btn){btn.addEventListener('click',function(){ask(btn.getAttribute('data-ask'));});});
 document.getElementById('sendBtn').addEventListener('click',function(){ask();});
+document.getElementById('recBtn').addEventListener('click',addRecommendation);
 document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();ask();}});
 </script></body></html>
