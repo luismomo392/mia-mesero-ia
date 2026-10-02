@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mía · Mesero IA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7f8;color:#13252b}.hero{background:linear-gradient(135deg,#073b4c,#087f8c);color:white;padding:22px 18px 30px;border-radius:0 0 28px 28px}.hero small{opacity:.85}.hero h1{margin:6px 0 2px;font-size:30px}.wrap{max-width:680px;margin:auto}.card{background:white;margin:14px;padding:16px;border-radius:18px;box-shadow:0 5px 18px #00000010}.mia{display:flex;gap:12px;align-items:center}.avatar{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#e4f5f3;font-size:28px}.chips{display:flex;gap:8px;overflow:auto;padding:4px 0 8px}.chip,.btn{border:0;border-radius:999px;padding:10px 13px;background:#e9f4f4;color:#075b65;font-weight:700;white-space:nowrap}.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dish{border:1px solid #e5ebed;border-radius:15px;padding:12px}.dish b{display:block}.dish p{font-size:12px;min-height:34px;color:#5c6b70}.price{font-weight:800}.add{width:100%;margin-top:8px;border:0;border-radius:10px;padding:8px;background:#087f8c;color:white;font-weight:800}.chat{background:#eef7f7;border-radius:14px;padding:12px;min-height:90px;white-space:pre-line}.input{display:flex;gap:8px;margin-top:10px}.input input{flex:1;border:1px solid #ccd8db;border-radius:12px;padding:12px;font-size:16px}.send{border:0;border-radius:12px;background:#073b4c;color:white;padding:0 15px;font-weight:800}.cartrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.total{font-size:21px;font-weight:900;text-align:right;margin-top:10px}.order{width:100%;border:0;border-radius:14px;padding:14px;background:#ef8354;color:white;font-weight:900;font-size:16px}.notice{font-size:12px;color:#69777b}.success{background:#e8f7ed;color:#176b35;padding:12px;border-radius:12px;margin-top:10px;display:none}@media(max-width:420px){.menu{grid-template-columns:1fr}.card{margin:11px}}
+</style>
+</head>
+<body><div class="wrap">
+<section class="hero"><small>🍤 COSTA MÍA · DEMO</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
+<section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" onclick="ask('Somos 3 y tenemos $800')">👥 3 personas · $800</button><button class="chip" onclick="ask('Quiero camarón sin picante')">🍤 Sin picante</button><button class="chip" onclick="ask('¿Cuánto llevamos?')">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button class="send" onclick="ask()">Enviar</button></div></section>
+<section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
+<section class="card"><h2>Tu pedido · Mesa 4</h2><div id="cart">Aún no has agregado nada.</div><div id="total" class="total">$0 MXN</div><button class="order" onclick="order()">Enviar pedido a cocina 🍽️</button><div id="ok" class="success">✅ ¡Pedido enviado! Cocina recibió la orden de la Mesa 4.</div></section>
+<section class="card notice">⚠️ Demo de prototipo. Si tienes una alergia grave, confírmala siempre directamente con el personal del restaurante.</section>
+</div>
+<script>
+const dishes=[
+['Aguachile verde','Camarón, pepino, cebolla y limón',185,'🌶️'],
+['Aguachile negro','Camarón, salsas negras y cítricos',205,'🌶️🌶️'],
+['Ceviche tropical','Pescado, mango, pepino y limón',165,'🥭'],
+['Tostada de camarón','Camarón fresco, aguacate y pico de gallo',85,'🍤'],
+['Tostada de atún','Atún, aguacate, ajonjolí y ponzu',105,'🐟'],
+['Tacos gobernador','3 tacos de camarón con queso',195,'🌮'],
+['Tacos de pescado','3 tacos capeados con ensalada',165,'🌮'],
+['Camarones al ajo','Camarones, mantequilla, ajo y arroz',245,'🍤'],
+['Camarones coco','Camarones empanizados con salsa mango',235,'🥥'],
+['Filete a la plancha','Pescado con ensalada y arroz',225,'🐟'],
+['Pulpo a las brasas','Pulpo, papa cambray y aderezo',295,'🐙'],
+['Orden de papas','Papas sazonadas para compartir',75,'🍟'],
+['Guacamole','Aguacate fresco con totopos',95,'🥑'],
+['Limonada','Natural o mineral',45,'🍋'],
+['Agua fresca','Jamaica o horchata',38,'🥤'],
+['Refresco','355 ml',40,'🥤'],
+['Cerveza sin alcohol','355 ml',55,'🍺'],
+['Pastel de limón','Rebanada',75,'🍰']
+];
+let cart=[];
+function money(n){return '$'+n.toLocaleString('es-MX')+' MXN'}
+function renderMenu(){document.getElementById('menu').innerHTML=dishes.map((d,i)=>`<div class="dish"><div style="font-size:25px">${d[3]}</div><b>${d[0]}</b><p>${d[1]}</p><span class="price">${money(d[2])}</span><button class="add" onclick="add(${i})">+ Agregar</button></div>`).join('')}
+function add(i){cart.push(dishes[i]);renderCart()}
+function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='Aún no has agregado nada.';document.getElementById('total').innerText='$0 MXN';return}el.innerHTML=cart.map((d,i)=>`<div class="cartrow"><span>${d[0]}</span><span>${money(d[2])} <button onclick="cart.splice(${i},1);renderCart()">×</button></span></div>`).join('');document.getElementById('total').innerText=money(cart.reduce((a,d)=>a+d[2],0))}
+function ask(p){let q=p||document.getElementById('q').value.trim();if(!q)return;let s=q.toLowerCase(),ans='';let total=cart.reduce((a,d)=>a+d[2],0);if(s.includes('cuánto')||s.includes('cuanto')||s.includes('cuenta')||s.includes('llevamos')) ans=cart.length?`Llevan ${cart.length} producto(s) por ${money(total)}. ¿Les agrego bebidas o algo para compartir?`:'Todavía no han agregado productos. Puedo armarles una combinación según su presupuesto.';else if(s.includes('800')||s.includes('presupuesto')) ans='Para 3 personas con unos $800 les propongo: tacos gobernador ($195), ceviche tropical ($165), camarones al ajo ($245), guacamole ($95) y 2 aguas frescas ($76). Total: $776. Quedan dentro del presupuesto 🙌';else if(s.includes('sin picante')||s.includes('no come picante')) ans='Claro 😊 Evitaría los aguachiles. Les recomiendo camarones al ajo, tacos gobernador, filete a la plancha o camarones coco. Confirma con el personal cualquier alergia o restricción grave.';else if(s.includes('camar')) ans='Si buscas camarón: tacos gobernador para algo antojable, camarones al ajo como plato fuerte o aguachile negro si quieres algo intenso 🌶️. ¿Prefieres picante o nada picante?';else ans='Puedo recomendarte según número de personas, presupuesto, camarón/pescado, picante o no picante. Por ejemplo: “somos 4 y traemos $1,000”.';document.getElementById('chat').innerText='Tú: '+q+'\n\nMía: '+ans;document.getElementById('q').value=''}
+function order(){if(!cart.length){document.getElementById('chat').innerText='Mía: Primero agrega al menos un producto al pedido 😊';return}document.getElementById('ok').style.display='block'}
+renderMenu();renderCart();
+</script></body></html>
