@@ -8,7 +8,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.2</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.3</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
 <section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
@@ -42,8 +42,12 @@ function renderMenu(){document.getElementById('menu').innerHTML=dishes.map((d,i)
 function add(i){cart.push(dishes[i]);memory.lastDish=dishes[i][0];renderCart()}
 function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='Aún no has agregado nada.';document.getElementById('total').innerText='$0 MXN';return}el.innerHTML=cart.map((d,i)=>`<div class="cartrow"><span>${d[0]}</span><span>${money(d[2])} <button onclick="cart.splice(${i},1);renderCart()">×</button></span></div>`).join('');document.getElementById('total').innerText=money(cart.reduce((a,d)=>a+d[2],0))}
 function normalize(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
-function getBudget(s){
+function getBudget(s,people){
   const clean=s.replace(/(\d)[,.](?=\d{3}(?:\D|$))/g,'$1');
+  const perPerson=clean.match(/\$?\s*(\d{2,6})\s*(?:pesos?\s*)?(?:por\s+(?:persona|cabeza)|cada\s+uno|c\s*\/\s*u)/);
+  const spendPer=clean.match(/(?:gastar|gastamos|presupuesto)(?:\s+de)?\s*\$?\s*(\d{2,6}).{0,18}(?:por\s+(?:persona|cabeza)|cada\s+uno|c\s*\/\s*u)/);
+  const pp=perPerson||spendPer;
+  if(pp&&people)return Number(pp[1])*people;
   const moneyMatch=clean.match(/\$\s*(\d{2,6})/);
   const contextMatch=clean.match(/(?:presupuesto|traemos|tenemos|gastar|gastamos|cuento con|contamos con)(?:\s+de|\s+con)?\s*\$?\s*(\d{2,6})/);
   const m=moneyMatch||contextMatch;
@@ -51,9 +55,9 @@ function getBudget(s){
 }
 function getPeople(s){let m=s.match(/(?:somos|para|venimos|seremos)\s+(\d{1,2})/);return m?Number(m[1]):null}
 function recommendation(q){
-  const s=normalize(q), newBudget=getBudget(s), newPeople=getPeople(s);
-  if(newBudget) memory.budget=newBudget;
+  const s=normalize(q), newPeople=getPeople(s), effectivePeople=newPeople||memory.people, newBudget=getBudget(s,effectivePeople);
   if(newPeople) memory.people=newPeople;
+  if(newBudget) memory.budget=newBudget;
   if(/sin picante|no.*picante|nada.*picante/.test(s)) memory.noSpicy=true;
   if(/camaron|camarones/.test(s)) memory.wantsShrimp=true;
   if(/pescado|filete/.test(s)) memory.wantsFish=true;
