@@ -8,7 +8,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.3</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.4</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
 <section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
@@ -70,7 +70,13 @@ function recommendation(q){
     if(tip){let pct=Number(tip[1]||tip[2]),amount=Math.round(totalNow*pct/100);return `${pct}% de propina son ${money(amount)}. Total con propina: ${money(totalNow+amount)}.`;}
     return 'Claro. ¿Qué porcentaje de propina quieres calcular? Por ejemplo: 10%, 15% o 20%.';
   }
-  let split=s.match(/(?:entre|divid|repart).{0,12}?(\d{1,2})/);if(split&&totalNow){let n=Number(split[1]);return `La cuenta es ${money(totalNow)}. Entre ${n}, toca aproximadamente ${money(Math.round(totalNow/n))} por persona.`;}
+  let split=s.match(/(?:entre|divid|repart).{0,20}?(\d{1,2})/);
+  const asksShare=/(?:cuanto|cuánto).*(?:toca|cada quien|cada uno|por persona)|(?:toca|corresponde).*(?:cada quien|cada uno|por persona)/.test(s);
+  if(totalNow&&(split||asksShare)){
+    const n=split?Number(split[1]):memory.people;
+    if(n&&n>0)return `La cuenta es ${money(totalNow)}. Como son ${n}, a cada quien le toca aproximadamente ${money(Math.round(totalNow/n))}.`;
+    return 'Claro. ¿Entre cuántas personas dividimos la cuenta?';
+  }
   const findDish=text=>dishes.find(d=>{const n=normalize(d[0]), words=n.split(' ');return text.includes(n)||(words.length>1&&text.includes(words.slice(-1)[0])&&words.slice(-1)[0].length>4);});
   if(/cambia|cambiar|cambialo|mejor.*por/.test(s)&&/\bpor\b/.test(s)){
     const parts=s.split(/\bpor\b/), from=findDish(parts[0])||(memory.lastDish?dishes.find(d=>d[0]===memory.lastDish):null), to=findDish(parts.slice(1).join(' por '));
