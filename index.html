@@ -8,7 +8,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.1</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.2</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
 <section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
@@ -36,10 +36,10 @@ const dishes=[
 ['Cerveza sin alcohol','355 ml',55,'🍺'],
 ['Pastel de limón','Rebanada',75,'🍰']
 ];
-let cart=[]; let memory={people:null,budget:null,noSpicy:false,wantsShrimp:false,wantsFish:false}; let lastPicks=[];
+let cart=[]; let memory={people:null,budget:null,noSpicy:false,wantsShrimp:false,wantsFish:false,lastDish:null}; let lastPicks=[];
 function money(n){return '$'+n.toLocaleString('es-MX')+' MXN'}
 function renderMenu(){document.getElementById('menu').innerHTML=dishes.map((d,i)=>`<div class="dish"><div style="font-size:25px">${d[3]}</div><b>${d[0]}</b><p>${d[1]}</p><span class="price">${money(d[2])}</span><button class="add" onclick="add(${i})">+ Agregar</button></div>`).join('')}
-function add(i){cart.push(dishes[i]);renderCart()}
+function add(i){cart.push(dishes[i]);memory.lastDish=dishes[i][0];renderCart()}
 function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='Aún no has agregado nada.';document.getElementById('total').innerText='$0 MXN';return}el.innerHTML=cart.map((d,i)=>`<div class="cartrow"><span>${d[0]}</span><span>${money(d[2])} <button onclick="cart.splice(${i},1);renderCart()">×</button></span></div>`).join('');document.getElementById('total').innerText=money(cart.reduce((a,d)=>a+d[2],0))}
 function normalize(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function getBudget(s){
@@ -67,9 +67,21 @@ function recommendation(q){
     return 'Claro. ¿Qué porcentaje de propina quieres calcular? Por ejemplo: 10%, 15% o 20%.';
   }
   let split=s.match(/(?:entre|divid|repart).{0,12}?(\d{1,2})/);if(split&&totalNow){let n=Number(split[1]);return `La cuenta es ${money(totalNow)}. Entre ${n}, toca aproximadamente ${money(Math.round(totalNow/n))} por persona.`;}
-  const itemMatch=dishes.find(d=>s.includes(normalize(d[0])));
+  const findDish=text=>dishes.find(d=>{const n=normalize(d[0]), words=n.split(' ');return text.includes(n)||(words.length>1&&text.includes(words.slice(-1)[0])&&words.slice(-1)[0].length>4);});
+  if(/cambia|cambiar|cambialo|mejor.*por/.test(s)&&/\bpor\b/.test(s)){
+    const parts=s.split(/\bpor\b/), from=findDish(parts[0])||(memory.lastDish?dishes.find(d=>d[0]===memory.lastDish):null), to=findDish(parts.slice(1).join(' por '));
+    if(from&&to){const idx=cart.findIndex(d=>d[0]===from[0]);if(idx>=0){cart.splice(idx,1,to);memory.lastDish=to[0];renderCart();return `Listo, cambié ${from[0]} por ${to[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}}
+    return 'Entendí que quieres hacer un cambio, pero necesito identificar claramente qué platillo quitamos y cuál ponemos.';
+  }
+  if(/quita uno|quitar uno|elimina uno|saca uno/.test(s)){
+    const target=memory.lastDish?dishes.find(d=>d[0]===memory.lastDish):null;
+    if(target){const idx=cart.findLastIndex?cart.findLastIndex(d=>d[0]===target[0]):(()=>{for(let i=cart.length-1;i>=0;i--)if(cart[i][0]===target[0])return i;return -1;})();if(idx>=0){cart.splice(idx,1);renderCart();return `Listo, quité uno de ${target[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}}
+    return '¿Uno de cuál platillo quieres que quite?';
+  }
+  const itemMatch=findDish(s);
+  if(itemMatch) memory.lastDish=itemMatch[0];
   if(itemMatch && /quita|quitar|elimina|eliminar|saca|sacar/.test(s)){const idx=cart.findIndex(d=>d[0]===itemMatch[0]);if(idx>=0){cart.splice(idx,1);renderCart();return `Listo, quité ${itemMatch[0]} del pedido. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}return `No encontré ${itemMatch[0]} en el pedido.`;}
-  if(itemMatch && /agrega|agregar|agregale|pon|ponme|anade|añade/.test(s)){let qty=1,m=s.match(/(?:ponme|pon|agrega|agregale|anade|añade)\s+(\d+)/);if(m)qty=Math.min(Number(m[1]),10);for(let i=0;i<qty;i++)cart.push(itemMatch);renderCart();return `Listo, agregué ${qty>1?qty+' × ':''}${itemMatch[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}
+  if(itemMatch && /agrega|agregar|agregale|pon|ponme|anade|añade/.test(s)){let qty=1,m=s.match(/(?:ponme|pon|agrega|agregale|anade|añade)\s+(\d+)/);if(m)qty=Math.min(Number(m[1]),10);for(let i=0;i<qty;i++)cart.push(itemMatch);memory.lastDish=itemMatch[0];renderCart();return `Listo, agregué ${qty>1?qty+' × ':''}${itemMatch[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}
   let pool=dishes.map((d,i)=>({d,i})).filter(x=>{
     if(noSpicy && x.d[0].toLowerCase().includes('aguachile')) return false;
     const txt=normalize(x.d[0]+' '+x.d[1]);
@@ -97,7 +109,7 @@ function recommendation(q){
   return 'Voy guardando lo que me dices 😊. Para armar una propuesta completa dime cuántos son y aproximadamente cuánto quieren gastar.';
 }
 function ask(p){let q=p||document.getElementById('q').value.trim();if(!q)return;let ans=recommendation(q);document.getElementById('chat').innerText='Tú: '+q+'\n\nMía: '+ans;document.getElementById('q').value='';document.getElementById('recBtn').style.display=lastPicks.length?'block':'none'}
-function addRecommendation(){if(!lastPicks.length)return;lastPicks.forEach(d=>cart.push(d));renderCart();document.getElementById('recBtn').style.display='none';document.getElementById('chat').innerText+='\n\n✅ Mía: Listo, agregué mi recomendación al pedido.'}
+function addRecommendation(){if(!lastPicks.length)return;lastPicks.forEach(d=>cart.push(d));if(lastPicks.length)memory.lastDish=lastPicks[lastPicks.length-1][0];renderCart();document.getElementById('recBtn').style.display='none';document.getElementById('chat').innerText+='\n\n✅ Mía: Listo, agregué mi recomendación al pedido.'}
 function order(){if(!cart.length){document.getElementById('chat').innerText='Mía: Primero agrega al menos un producto al pedido 😊';return}const total=cart.reduce((a,d)=>a+d[2],0);const counts={};cart.forEach(d=>counts[d[0]]=(counts[d[0]]||0)+1);const lines=Object.entries(counts).map(([n,q])=>q+' × '+n).join('<br>');const box=document.getElementById('confirmBox');box.innerHTML='<b>Revisa antes de enviar:</b><br><br>'+lines+'<br><br><b>Total: '+money(total)+'</b><button class="confirmbtn" onclick="confirmOrder()">Confirmar pedido · Mesa 4</button>';box.style.display='block';}
 function confirmOrder(){document.getElementById('confirmBox').style.display='none';const num=String(Math.floor(10+Math.random()*90)).padStart(3,'0');const ok=document.getElementById('ok');ok.innerText='✅ Pedido #'+num+' · Mesa 4 · Enviado a cocina';ok.style.display='block';const st=document.getElementById('status');st.innerText='🟡 Preparando tu pedido…';st.style.display='block';setTimeout(()=>{st.innerText='🟢 Pedido listo · Mesa 4';},12000);}
 renderMenu();renderCart();
