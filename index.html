@@ -8,7 +8,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.4</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
+<section class="hero"><small>🍤 COSTA MÍA · MÍA v0.4.5</small><h1>Mía, tu mesera IA</h1><div>📍 Mesa 4 · ¡Pide a tu gusto!</div></section>
 <section class="card mia"><div class="avatar">🤖</div><div><b>¡Hola! Soy Mía 👋</b><br><span>Te ayudo a elegir, cuidar tu presupuesto y preparar tu pedido.</span></div></section>
 <section class="card"><b>Pregúntale a Mía</b><div class="chips"><button class="chip" data-ask="Somos 3 y tenemos $800">👥 3 personas · $800</button><button class="chip" data-ask="Quiero camarón sin picante">🍤 Sin picante</button><button class="chip" data-ask="¿Cuánto llevamos?">🧾 ¿Cuánto llevamos?</button></div><div id="chat" class="chat">Mía: Cuéntame qué se les antoja, cuántos son o cuánto quieren gastar 😊</div><button id="recBtn" class="recbtn">+ Agregar recomendación al pedido</button><div class="input"><input id="q" placeholder="Ej. Somos 3, presupuesto $800..."><button id="sendBtn" class="send">Enviar</button></div></section>
 <section class="card"><h2>Menú 🌊</h2><div id="menu" class="menu"></div></section>
@@ -77,7 +77,20 @@ function recommendation(q){
     if(n&&n>0)return `La cuenta es ${money(totalNow)}. Como son ${n}, a cada quien le toca aproximadamente ${money(Math.round(totalNow/n))}.`;
     return 'Claro. ¿Entre cuántas personas dividimos la cuenta?';
   }
-  const findDish=text=>dishes.find(d=>{const n=normalize(d[0]), words=n.split(' ');return text.includes(n)||(words.length>1&&text.includes(words.slice(-1)[0])&&words.slice(-1)[0].length>4);});
+  const findDish=text=>{
+    const stop=new Set(['de','del','la','las','el','los','al','a']);
+    const tokens=normalize(text).replace(/[^a-z0-9ñ\s]/g,' ').split(/\s+/).filter(Boolean);
+    let scored=dishes.map(d=>{
+      const nameTokens=normalize(d[0]).split(/\s+/).filter(w=>!stop.has(w));
+      let score=nameTokens.reduce((n,w)=>n+(tokens.some(t=>t===w||t.startsWith(w)||w.startsWith(t))?1:0),0);
+      if(text.includes(normalize(d[0])))score+=10;
+      return {d,score,total:nameTokens.length};
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||b.total-a.total);
+    if(!scored.length)return null;
+    if(scored[0].score>=10||scored[0].score>=Math.min(2,scored[0].total))return scored[0].d;
+    const oneWord=scored.filter(x=>x.score===scored[0].score);
+    return oneWord.length===1?oneWord[0].d:null;
+  };
   if(/cambia|cambiar|cambialo|mejor.*por/.test(s)&&/\bpor\b/.test(s)){
     const parts=s.split(/\bpor\b/), from=findDish(parts[0])||(memory.lastDish?dishes.find(d=>d[0]===memory.lastDish):null), to=findDish(parts.slice(1).join(' por '));
     if(from&&to){const idx=cart.findIndex(d=>d[0]===from[0]);if(idx>=0){cart.splice(idx,1,to);memory.lastDish=to[0];renderCart();return `Listo, cambié ${from[0]} por ${to[0]}. Ahora llevan ${money(cart.reduce((a,d)=>a+d[2],0))}.`;}}
